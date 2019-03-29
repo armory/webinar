@@ -93,4 +93,4 @@ kubectl apply -f mandatory.yaml -f service-l7.yaml -f patch-configmap-l7.yaml
 ```
 
 # Set up DNS
-Once the ingress service is up and has an ELB (`kubectl get svc -n ingress-nginx nginx-ingress`), create a DNS CNAME entry to point that at the ELB URL.
+Once the ingress service is up and has an ELB (`kubectl get svc -n ingress-nginx ingress-nginx -owide`), create a DNS CNAME entry to point that at the ELB URL.

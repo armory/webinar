@@ -40,8 +40,8 @@ add inline permissions, JSON
     "Statement": [
         {
             "Effect": "Allow",
-            "Action": "s3:ListAllMyBuckets",
-            "Resource": "arn:aws:s3:::*"
+            "Action": "s3:ListBucket",
+            "Resource": "arn:aws:s3:::armory-webinar-20190329"
         },
         {
             "Effect": "Allow",
