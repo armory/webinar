@@ -18,14 +18,14 @@ mkdir .secret
 ```
 
 Create S3 bucket (via UI):
-armory-webinar-20190327
+armory-webinar-20190329
 keep all versions of object in the same buket
 automatically encrypt
 
 Services > IAM
 Users
 Create user
-armory-webinar-20190327-user
+armory-webinar-20190329-user
 programmatic access
 permissions:
 no permissions
@@ -47,8 +47,8 @@ add inline permissions, JSON
             "Effect": "Allow",
             "Action": "s3:*",
             "Resource": [
-                "arn:aws:s3:::armory-webinar-20190328",
-                "arn:aws:s3:::armory-webinar-20190328/*"
+                "arn:aws:s3:::armory-webinar-20190329",
+                "arn:aws:s3:::armory-webinar-20190329/*"
             ]
         }
     ]
@@ -61,7 +61,7 @@ export AWS_ACCESS_KEY_ID=
 export AWS_SECRET_ACCESS_KEY=
 aws sts get-caller-identity
 
-aws s3 ls armory-webinar-20190328
+aws s3 ls armory-webinar-20190329
 
 unset AWS_ACCESS_KEY_ID
 unset AWS_SECRET_ACCESS_KEY
@@ -77,49 +77,48 @@ SERVICE_ACCOUNT_NAME="spinnaker-sa"
 ROLE_NAME="spinnaker-role"
 ACCOUNT_NAME="spinnaker"
 
-tee ${SA_NAMESPACE}-${SERVICE_ACCOUNT_NAME}-service-account.yml <<-'EOF'
+tee ${SA_NAMESPACE}-${SERVICE_ACCOUNT_NAME}-service-account.yml <<-EOF
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: SA_NAMESPACE
+  name: ${SA_NAMESPACE}
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: SERVICE_ACCOUNT_NAME
-  namespace: SA_NAMESPACE
+  name: ${SERVICE_ACCOUNT_NAME}
+  namespace: ${SA_NAMESPACE}
 EOF
-
-sed -i.bak \
-  -e "s/SA_NAMESPACE/${SA_NAMESPACE}/g" \
-  -e "s/SERVICE_ACCOUNT_NAME/${SERVICE_ACCOUNT_NAME}/g" \
-  ${SA_NAMESPACE}-${SERVICE_ACCOUNT_NAME}-service-account.yml
 
 kubectl --context ${CONTEXT} apply -f ${SA_NAMESPACE}-${SERVICE_ACCOUNT_NAME}-service-account.yml
 
-tee ${SA_NAMESPACE}-${SERVICE_ACCOUNT_NAME}-admin-clusterrolebinding.yml <<-'EOF'
+tee ${SA_NAMESPACE}-${SERVICE_ACCOUNT_NAME}-rbac.yml <<-EOF
+---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
+kind: Role
 metadata:
-  name: SERVICE_ACCOUNT_NAME-admin
+  name: ${ROLE_NAME}
+  namespace: ${SA_NAMESPACE}
+rules:
+- apiGroups: ["*"]
+  resources: ["*"]
+  verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: ${SERVICE_ACCOUNT_NAME}-binding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: cluster-admin
+  kind: Role
+  name: ${ROLE_NAME}
 subjects:
 - kind: ServiceAccount
-  name: SERVICE_ACCOUNT_NAME
-  namespace: SA_NAMESPACE
+  name: ${SERVICE_ACCOUNT_NAME}
+  namespace: ${SA_NAMESPACE}
 EOF
 
-
-# Update the manifest with bash environment variables
-sed -i.bak \
-  -e "s/SA_NAMESPACE/${SA_NAMESPACE}/g" \
-  -e "s/SERVICE_ACCOUNT_NAME/${SERVICE_ACCOUNT_NAME}/g" \
-  ${SA_NAMESPACE}-${SERVICE_ACCOUNT_NAME}-admin-clusterrolebinding.yml
-
-kubectl --context ${CONTEXT} apply -f ${SA_NAMESPACE}-${SERVICE_ACCOUNT_NAME}-admin-clusterrolebinding.yml
+kubectl --context ${CONTEXT} apply -f ${SA_NAMESPACE}-${SERVICE_ACCOUNT_NAME}-rbac.yml
 
 #### 
 NEW_CONTEXT=${SA_NAMESPACE}-sa

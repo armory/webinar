@@ -20,56 +20,44 @@ export KUBECONFIG=kubeconfig-webinar
 
 CONTEXT=webinar-eks-target
 SA_NAMESPACE="spinnaker-system"
-SERVICE_ACCOUNT_NAME="spinnaker-dev-sa"
+SERVICE_ACCOUNT_NAME="spinnaker-target-sa"
 ROLE_NAME="spinnaker-role"
-ACCOUNT_NAME="spinnaker-dev"
+ACCOUNT_NAME="kubernetes-target"
 
-tee ${SA_NAMESPACE}-${SERVICE_ACCOUNT_NAME}-service-account.yml <<-'EOF'
+tee ${SA_NAMESPACE}-${SERVICE_ACCOUNT_NAME}-service-account.yml <<-EOF
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: SA_NAMESPACE
+  name: ${SA_NAMESPACE}
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: SERVICE_ACCOUNT_NAME
-  namespace: SA_NAMESPACE
+  name: ${SERVICE_ACCOUNT_NAME}
+  namespace: ${SA_NAMESPACE}
 EOF
-
-# Update the manifest with bash environment variables
-sed -i.bak \
-  -e "s/SA_NAMESPACE/${SA_NAMESPACE}/g" \
-  -e "s/SERVICE_ACCOUNT_NAME/${SERVICE_ACCOUNT_NAME}/g" \
-  ${SA_NAMESPACE}-${SERVICE_ACCOUNT_NAME}-service-account.yml
 
 # Create the service account
 kubectl --context ${CONTEXT} apply -f ${SA_NAMESPACE}-${SERVICE_ACCOUNT_NAME}-service-account.yml
 
 # Create a manifest containing the ClusterRoleBinding
-tee ${SA_NAMESPACE}-${SERVICE_ACCOUNT_NAME}-admin-clusterrolebinding.yml <<-'EOF'
+tee ${SA_NAMESPACE}-${SERVICE_ACCOUNT_NAME}-rbac.yml <<-EOF
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: SERVICE_ACCOUNT_NAME-admin
+  name: ${SERVICE_ACCOUNT_NAME}-admin
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: cluster-admin
 subjects:
 - kind: ServiceAccount
-  name: SERVICE_ACCOUNT_NAME
-  namespace: SA_NAMESPACE
+  name: ${SERVICE_ACCOUNT_NAME}
+  namespace: ${SA_NAMESPACE}
 EOF
 
-# Update the manifest with bash environment variables
-sed -i.bak \
-  -e "s/SA_NAMESPACE/${SA_NAMESPACE}/g" \
-  -e "s/SERVICE_ACCOUNT_NAME/${SERVICE_ACCOUNT_NAME}/g" \
-  ${SA_NAMESPACE}-${SERVICE_ACCOUNT_NAME}-admin-clusterrolebinding.yml
-
 # Create the ClusterRoleBinding
-kubectl --context ${CONTEXT} apply -f ${SA_NAMESPACE}-${SERVICE_ACCOUNT_NAME}-admin-clusterrolebinding.yml
+kubectl --context ${CONTEXT} apply -f ${SA_NAMESPACE}-${SERVICE_ACCOUNT_NAME}-rbac.yml
 
 NEW_CONTEXT=${SA_NAMESPACE}-sa
 KUBECONFIG_FILE="kubeconfig-target-sa"
@@ -126,7 +114,7 @@ cp ${KUBECONFIG_FILE} .secret/
 export KUBECONFIG_FULL=/home/spinnaker/.secret/kubeconfig-target-sa
 
 # Enter the account name you want Spinnaker to use to identify the deployment target (should be the same as above)
-export ACCOUNT_NAME="kubernetes"
+export ACCOUNT_NAME="kubernetes-target"
 
 hal config provider kubernetes account add ${ACCOUNT_NAME} \
   --provider-version v2 \
