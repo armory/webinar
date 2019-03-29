@@ -1,5 +1,7 @@
 ---
 # This one has no short functions
+# Based on 2 CF templates from here: 
+# https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html
 AWSTemplateFormatVersion: '2010-09-09'
 Description: 'Amazon EKS Sample VPC'
 
@@ -31,7 +33,10 @@ Parameters:
   NodeImageId:
     Type: AWS::EC2::Image::Id
     Description: AMI id for the node instances.
-    Default: ami-0c28139856aaf9c3b
+    # us-west-2
+    # Default: ami-0c28139856aaf9c3b
+    # us-east-1
+    Default: ami-0eeeef929db40543c
 
   NodeInstanceType:
     Description: EC2 instance type for the node instances
