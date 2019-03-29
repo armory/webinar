@@ -25,6 +25,8 @@ aws cloudformation list-stacks --query 'StackSummaries[?StackStatus==`CREATE_COM
 # Get the list of stacks
 STACK=webinar-eks-target
 STACK=webinar-eks-spinnaker
+STACK_NAME=webinar-eks-target
+STACK_NAME=webinar-eks-spinnaker
 
 EKSCLUSTER=$(aws cloudformation describe-stack-resources \
     --stack-name ${STACK} \
@@ -42,8 +44,9 @@ ROLEARN=$(aws iam get-role \
     --output text)
 
 aws eks update-kubeconfig --name ${EKSCLUSTER} --kubeconfig kubeconfig-webinar
+export KUBECONFIG=kubeconfig-webinar
 CONTEXT=$(kubectl --kubeconfig kubeconfig-webinar config current-context)
-sed -i.bak "s|${CONTEXT}|${STACK}|g" kubeconfig-webinar
+sed -i.bak "s|${CONTEXT}|${STACK_NAME}|g" kubeconfig-webinar
 rm kubeconfig-webinar.bak
 
 tee aws-auth-cm-${EKSCLUSTER}.yaml <<-'EOF'
@@ -80,7 +83,8 @@ wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/ma
 wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/provider/aws/service-l7.yaml
 wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/provider/aws/patch-configmap-l7.yaml
 
-### Update service-l7.yaml with ACM certificate
+### Update service-l7.yaml with ACM certificate from this command:
+aws acm list-certificates
 
 ### Then do this:
 export KUBECONFIG=kubeconfig-webinar
@@ -89,4 +93,4 @@ kubectl apply -f mandatory.yaml -f service-l7.yaml -f patch-configmap-l7.yaml
 ```
 
 # Set up DNS
-Once the ingress service is up and has an ELB (`kubectl get svc -n nginx-ingress nginx-ingress`), create a DNS CNAME entry to point that at the ELB URL.
+Once the ingress service is up and has an ELB (`kubectl get svc -n ingress-nginx nginx-ingress`), create a DNS CNAME entry to point that at the ELB URL.

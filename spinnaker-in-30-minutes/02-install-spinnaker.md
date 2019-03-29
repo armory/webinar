@@ -108,6 +108,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: ${SERVICE_ACCOUNT_NAME}-binding
+  namespace: ${SA_NAMESPACE}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
