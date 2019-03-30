@@ -78,7 +78,7 @@ Add one deploy stage:
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: prod-west
+  name: prod-1
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -86,7 +86,7 @@ metadata:
   labels:
     app: helloworld
   name: helloworld
-  namespace: prod-west
+  namespace: prod-1
 spec:
   replicas: '${ #toInt( parameters.prodcount ) }'
   selector:
@@ -111,7 +111,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: helloworld
-  namespace: prod-west
+  namespace: prod-1
 spec:
   ports:
     - port: 80
@@ -127,7 +127,7 @@ Add one deploy stage:
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: prod-east
+  name: prod-2
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -135,7 +135,7 @@ metadata:
   labels:
     app: helloworld
   name: helloworld
-  namespace: prod-east
+  namespace: prod-2
 spec:
   replicas: '${ #toInt( parameters.prodcount ) }'
   selector:
@@ -160,7 +160,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: helloworld
-  namespace: prod-east
+  namespace: prod-2
 spec:
   ports:
     - port: 80
