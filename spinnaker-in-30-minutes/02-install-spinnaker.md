@@ -75,6 +75,9 @@ unset AWS_SECRET_ACCESS_KEY
 
 Download and run like this:
 ```bash
+curl -LO https://github.com/armory/spinnaker-tools/releases/download/0.0.1/spinnaker-tools-darwin
+chmod +x spinnaker-tools-darwin
+mv spinnaker-tools-darwin spinnaker-tools
 ./spinnaker-tools create-service-account --kubeconfig kubeconfig-webinar -o kubeconfig-spinnaker-sa
 # Choose source kubernetes cluster, new namespace, kubeconfig
 ```
