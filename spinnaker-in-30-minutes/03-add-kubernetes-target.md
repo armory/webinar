@@ -20,8 +20,9 @@ Next, we'll add a second Kubernetes cluster as a deployment target to Spinnaker
 
 Download and run like this:
 ```bash
-./spinnaker-tools create-service-account --kubeconfig kubeconfig-webinar -o kubeconfig-spinnaker-sa
-# Choose source kubernetes cluster, new namespace, kubeconfig
+# Different output file
+./spinnaker-tools create-service-account --kubeconfig kubeconfig-webinar -o kubeconfig-target-sa
+# Choose target kubernetes cluster, new namespace, kubeconfig
 ```
 
 ## Add the second cluster (manual)
