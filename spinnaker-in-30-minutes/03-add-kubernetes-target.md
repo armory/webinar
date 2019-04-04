@@ -13,7 +13,18 @@ Here's what we've done so far:
 
 Next, we'll add a second Kubernetes cluster as a deployment target to Spinnaker
 
-## Add the second cluster
+## Create kubeconfig for source (binary)
+* Get binary from https://github.com/armory/spinnaker-tools/releases
+* OSX: https://github.com/armory/spinnaker-tools/releases/download/0.0.1/spinnaker-tools-darwin
+* Linux: https://github.com/armory/spinnaker-tools/releases/download/0.0.1/spinnaker-tools-linux
+
+Download and run like this:
+```bash
+./spinnaker-tools create-service-account --kubeconfig kubeconfig-webinar -o kubeconfig-spinnaker-sa
+# Choose source kubernetes cluster, new namespace, kubeconfig
+```
+
+## Add the second cluster (manual)
 From the machine with access to the primary kubeconfig (outside of Halyard):
 ```bash
 export KUBECONFIG=kubeconfig-webinar

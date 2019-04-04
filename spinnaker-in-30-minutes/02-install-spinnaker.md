@@ -30,10 +30,11 @@ programmatic access
 permissions:
 no permissions
 
-grab access key and secret access key (will have to erase this later)
+1. grab access key and secret access key (will have to erase this later)
 
-go to user
-add inline permissions, JSON
+1. go to user
+1. add inline permissions, JSON
+
 ```json
 {
     "Version": "2012-10-17",
@@ -55,7 +56,7 @@ add inline permissions, JSON
 }
 ```
 
-Validate access:
+## Validate access:
 ```bash
 export AWS_ACCESS_KEY_ID=
 export AWS_SECRET_ACCESS_KEY=
@@ -67,7 +68,19 @@ unset AWS_ACCESS_KEY_ID
 unset AWS_SECRET_ACCESS_KEY
 ```
 
-Create kubeconfig for source
+## Create kubeconfig for source (binary)
+* Get binary from https://github.com/armory/spinnaker-tools/releases
+* OSX: https://github.com/armory/spinnaker-tools/releases/download/0.0.1/spinnaker-tools-darwin
+* Linux: https://github.com/armory/spinnaker-tools/releases/download/0.0.1/spinnaker-tools-linux
+
+Download and run like this:
+```bash
+./spinnaker-tools create-service-account --kubeconfig kubeconfig-webinar -o kubeconfig-spinnaker-sa
+# Choose source kubernetes cluster, new namespace, kubeconfig
+```
+
+
+## Create kubeconfig for source (long method)
 ```bash
 export KUBECONFIG=kubeconfig-webinar
 
@@ -238,8 +251,8 @@ Show the UI via Port Forward (must be done from local laptop):
 ```bash
 export KUBECONFIG=kubeconfig-webinar
 kubectl get pods -n spinnaker
-kubectl -n spinnaker port-forward spin-gate-7bbf9f6589-cmnvd 8084:8084 &
-kubectl -n spinnaker port-forward spin-deck-5c556d58df-46hzc 9000:9000 &
+kubectl -n spinnaker port-forward svc/spin-gate 8084:8084 &
+kubectl -n spinnaker port-forward svc/spin-deck 9000:9000 &
 ```
 
 
