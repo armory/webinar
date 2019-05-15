@@ -2,11 +2,11 @@
 
 Here's what we have so far:
 
-* Two EKS Clusters (with two EKS nodes) - one to install Spinnaker in, one to deploy to
-* Kubeconfig with full access to each cluster
+* An EKS Clusters (with two nodes) - This is where we we will install Spinnaker
+* Kubeconfig with full access to the EKS cluster
 * Nginx ingress controller installed in the Spinnaker EKS cluster, set up with the following:
-  * Certificate for *.webinar.spinnaker.io
-  * DNS pointing *.webinar.spinnaker.io at our ingress controller
+  * Certificate for *.webinar.armory.io
+  * DNS pointing *.webinar.armory.io at our ingress controller
 
 # Introduction to kubeconfigs (slide)
 
@@ -18,22 +18,20 @@ mkdir .secret
 ```
 
 Create S3 bucket (via UI):
-armory-webinar-20190329
-keep all versions of object in the same buket
-automatically encrypt
+* Bucket Name: armory-webinar-YYYYMMDD
+* keep all versions of object in the same bucket
+* automatically encrypt
 
 Services > IAM
-Users
-Create user
-armory-webinar-20190329-user
-programmatic access
-permissions:
-no permissions
+* Users
+* Create user: armory-webinar-YYYYMMDD-user
+* programmatic access
+* permissions:
+  * no permissions
 
 1. grab access key and secret access key (will have to erase this later)
-
-1. go to user
-1. add inline permissions, JSON
+2. go to user
+3. add inline permissions, in order to give the user permissions to the s3 bucket we just created.
 
 ```json
 {
@@ -42,14 +40,14 @@ no permissions
         {
             "Effect": "Allow",
             "Action": "s3:ListBucket",
-            "Resource": "arn:aws:s3:::armory-webinar-20190329"
+            "Resource": "arn:aws:s3:::armory-webinar-YYYYMMDD"
         },
         {
             "Effect": "Allow",
             "Action": "s3:*",
             "Resource": [
-                "arn:aws:s3:::armory-webinar-20190329",
-                "arn:aws:s3:::armory-webinar-20190329/*"
+                "arn:aws:s3:::armory-webinar-YYYYMMDD",
+                "arn:aws:s3:::armory-webinar-YYYYMMDD/*"
             ]
         }
     ]
@@ -62,7 +60,7 @@ export AWS_ACCESS_KEY_ID=
 export AWS_SECRET_ACCESS_KEY=
 aws sts get-caller-identity
 
-aws s3 ls armory-webinar-20190329
+aws s3 ls armory-webinar-YYYYMMDD
 
 unset AWS_ACCESS_KEY_ID
 unset AWS_SECRET_ACCESS_KEY
@@ -70,12 +68,12 @@ unset AWS_SECRET_ACCESS_KEY
 
 ## Create kubeconfig for source (binary)
 * Get binary from https://github.com/armory/spinnaker-tools/releases
-* OSX: https://github.com/armory/spinnaker-tools/releases/download/0.0.1/spinnaker-tools-darwin
-* Linux: https://github.com/armory/spinnaker-tools/releases/download/0.0.1/spinnaker-tools-linux
+* OSX: https://github.com/armory/spinnaker-tools/releases/download/0.0.4/spinnaker-tools-darwin
+* Linux: https://github.com/armory/spinnaker-tools/releases/download/0.0.4/spinnaker-tools-linux
 
 Download and run like this:
 ```bash
-curl -LO https://github.com/armory/spinnaker-tools/releases/download/0.0.1/spinnaker-tools-darwin
+curl -LO https://github.com/armory/spinnaker-tools/releases/download/0.0.4/spinnaker-tools-darwin
 chmod +x spinnaker-tools-darwin
 mv spinnaker-tools-darwin spinnaker-tools
 ./spinnaker-tools create-service-account --kubeconfig kubeconfig-webinar -o kubeconfig-spinnaker-sa
@@ -223,7 +221,6 @@ hal config features edit --artifacts true
 hal config provider kubernetes account add ${ACCOUNT_NAME} \
   --provider-version v2 \
   --kubeconfig-file ${KUBECONFIG_FULL} \
-  --namespaces ${NAMESPACE} \
   --only-spinnaker-managed true
 
 hal config deploy edit \
@@ -232,7 +229,7 @@ hal config deploy edit \
   --location ${NAMESPACE}
 
 export ACCESS_KEY_ID=AKIAYJIFACYPHJS7YNVO
-export BUCKET_NAME=armory-webinar-20190328
+export BUCKET_NAME=armory-webinar-YYYYMMDD
 export REGION=us-east-1
 hal config storage s3 edit \
     --bucket ${BUCKET_NAME} \
@@ -244,13 +241,13 @@ hal config storage edit --type s3
 
 hal version list
 
-hal config version edit --version 1.12.7
+hal config version edit --version X.Y.Z
 
 hal deploy apply
 ```
 
-Show the UI via Port Forward (must be done from local laptop):
 # Port forward
+Gives you access to the UI via Port Forward (must be done from local laptop):
 ```bash
 export KUBECONFIG=kubeconfig-webinar
 kubectl get pods -n spinnaker
@@ -259,7 +256,7 @@ kubectl -n spinnaker port-forward svc/spin-deck 9000:9000 &
 ```
 
 
-
+# Next Steps
 Create the ingress:
 ```yaml
 apiVersion: extensions/v1beta1
