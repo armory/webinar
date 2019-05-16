@@ -12,9 +12,7 @@ Here's what we have so far:
 
 In working directory:
 ```bash
-mkdir .hal
-mkdir .kube
-mkdir .secret
+mkdir -p .hal/.secret
 ```
 
 Create S3 bucket (via UI):
@@ -78,6 +76,8 @@ chmod +x spinnaker-tools-darwin
 mv spinnaker-tools-darwin spinnaker-tools
 ./spinnaker-tools create-service-account --kubeconfig kubeconfig-webinar -o kubeconfig-spinnaker-sa
 # Choose source kubernetes cluster, new namespace, kubeconfig
+
+cp kubeconfig-spinnaker-sa .hal/.secret/kubeconfig-spinnaker-sa
 ```
 
 
@@ -195,7 +195,6 @@ Now, we have three things:
 ```bash
 docker run --name halyard -it --rm \
   -v ${PWD}/.hal:/home/spinnaker/.hal \
-  -v ${PWD}/.secret:/home/spinnaker/.secret \
   gcr.io/spinnaker-marketplace/halyard:stable
 ```
 
@@ -216,7 +215,6 @@ NAMESPACE=spinnaker
 KUBECONFIG_FULL=/home/spinnaker/.secret/kubeconfig-spinnaker-sa
 
 hal config provider kubernetes enable
-hal config features edit --artifacts true
 
 hal config provider kubernetes account add ${ACCOUNT_NAME} \
   --provider-version v2 \
@@ -238,6 +236,8 @@ hal config storage s3 edit \
     --region ${REGION}
 
 hal config storage edit --type s3
+
+hal config features edit --artifacts true
 
 hal version list
 
