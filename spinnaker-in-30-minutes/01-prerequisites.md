@@ -19,7 +19,7 @@ KEYPAIRNAME=mykeypairname
 aws cloudformation create-stack --stack-name ${STACK} \
   --template-body file://${FILEPATH} \
   --parameters ParameterKey=KeyName,ParameterValue=${KEYPAIRNAME} \
-    ParameterKey=NodeImageId,ParameterValue=${NODEAMIID}
+    ParameterKey=NodeImageId,ParameterValue=${NODEAMIID} \
   --capabilities CAPABILITY_IAM
 ```
 See note below regarding EKS permissions.
