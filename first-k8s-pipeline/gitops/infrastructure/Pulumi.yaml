@@ -1,0 +1,3 @@
+name: minnaker
+runtime: nodejs
+description: Stand up Minnaker in an AWS EC2 instance
