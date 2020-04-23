@@ -5,7 +5,9 @@ Learn how to create a Spinnaker pipeline that deploys a Kubernetes manifest.
 
 ## Files Needed:
 gitops/manifests/*.yml -- all the kubernetes manifests are located in this folder
-The image we will be deploying is `away168/rps:v0.1.1`
+The image we will be deploying is `away168/rps:v1.0.0`
+
+Note if you're running this training material with a Minnaker instance - use the `ingress.yml` instead of the `service.yml`.
 
 ## Source code for RPS App
 github.com/away168/RPS-App

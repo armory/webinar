@@ -26,9 +26,10 @@ metadata:
   namespace: '${execution.application}'
 spec:
   rules:
-    - http:
+    - host: '${execution.application}.annapolis.armory.io'
+      http:
         paths:
           - backend:
               serviceName: rps-service
               servicePort: 8080
-            path: '/${execution.application}'
+            path: '/'

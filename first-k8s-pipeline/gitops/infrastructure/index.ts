@@ -20,7 +20,7 @@ const amiId = aws.getAmi({
 const group = new aws.ec2.SecurityGroup("minnaker-secgrp", {
     ingress: [
         { protocol: "tcp", fromPort: 22, toPort: 22, cidrBlocks: ["0.0.0.0/0"] },
-        //{ protocol: "tcp", fromPort: 80, toPort: 80, cidrBlocks: ["0.0.0.0/0"] },
+        { protocol: "tcp", fromPort: 80, toPort: 80, cidrBlocks: ["0.0.0.0/0"] },
         { protocol: "tcp", fromPort: 443, toPort: 443, cidrBlocks: ["0.0.0.0/0"] }
     ],
     egress: [
@@ -67,7 +67,7 @@ const elb = new aws.elb.LoadBalancer("minnaker-annapolis-elb", {
     healthCheck: {
         healthyThreshold: 2,
         interval: 15,
-        target: "HTTPS:443/",
+        target: "TCP:80/",
         timeout: 5,
         unhealthyThreshold: 3,
     },
@@ -75,7 +75,7 @@ const elb = new aws.elb.LoadBalancer("minnaker-annapolis-elb", {
     instances: [server.id],
     listeners: [
         {
-            instancePort: 443,
+            instancePort: 80,
             instanceProtocol: "http",
             lbPort: 443,
             lbProtocol: "https",

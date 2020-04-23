@@ -18,3 +18,30 @@ e.g. `export AWS_PROFILE=armory`
 `pulumi up`
 
 ### Other
+
+Nice to have Minnaker use an updated ingress (e.g.):
+
+```
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  labels:
+    app: spin
+  name: spin-ingress
+  namespace: spinnaker
+spec:
+  rules:
+  -
+    host: spinnaker.annapolis.armory.io
+    http:
+      paths:
+      - backend:
+          serviceName: spin-deck
+          servicePort: 9000
+        path: /
+      - backend:
+          serviceName: spin-gate
+          servicePort: 8084
+        path: /api/v1
+```
