@@ -1,0 +1,35 @@
+#if you're running minnaker use this manifest
+apiVersion: v1
+kind: Service
+metadata:
+  name: rps-service
+  namespace: '${execution.application}'
+spec:
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: 80
+  selector:
+    app: rps
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    traefik.ingress.kubernetes.io/rule-type: PathPrefixStrip
+  labels:
+    app: rps
+  name: rps-ingress
+  namespace: '${execution.application}'
+spec:
+  rules:
+    - host: '${execution.application}.annapolis.armory.io'
+      http:
+        paths:
+          - backend:
+              serviceName: rps-service
+              servicePort: 8080
+            path: '/'
