@@ -10,9 +10,9 @@ curl -L -O https://raw.githubusercontent.com/armory/webinar/master/spinnaker-in-
 STACK=spinnaker-stack
 FILEPATH=$PWD/eks.yml
 # for us-west-2
-NODEAMIID=ami-0c28139856aaf9c3b 
+NODEAMIID=ami-01f2f1180914aad2b 
 # for us-east-1 , default
-# NODEAMIID=ami-0eeeef929db40543c
+# NODEAMIID=ami-09ba20e934af98ddf
 # Get the list of the valid keypairs and replace with your keypairname.
 aws ec2 describe-key-pairs --region us-west-2 
 KEYPAIRNAME=mykeypairname
